@@ -1,3 +1,5 @@
+# probably going to rework this to use the same library as sam's
+
 import pandas as pd
 import math
 import numpy as np
