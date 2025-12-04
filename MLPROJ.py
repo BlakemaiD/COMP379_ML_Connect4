@@ -4,6 +4,8 @@ import pickle
 nn2 = keras.models.load_model('nn2.keras')
 with open('nn1.pkl', 'rb') as file:
     nn1 = pickle.load(file)
+with open('knn.pkl', 'rb') as file:
+    knn = pickle.load(file)
 
 #data structure for storing game board
 
@@ -19,4 +21,5 @@ with open('nn1.pkl', 'rb') as file:
             #brake loop iteration
 
         #change whose turn it is
+
 
