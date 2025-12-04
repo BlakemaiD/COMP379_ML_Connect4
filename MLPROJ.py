@@ -1,4 +1,7 @@
+import keras
 #load all models
+nn2 = keras.models.load_model('nn2.keras')
+
 #data structure for storing game board
 
 #play each model against each other (do one where each goes first?)
@@ -11,4 +14,5 @@
         #check if the games ends
             #if game ends, record who won (maybe record whether the first player won?)
             #brake loop iteration
+
         #change whose turn it is
