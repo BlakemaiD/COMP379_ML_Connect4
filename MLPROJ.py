@@ -14,7 +14,10 @@ with open('svm.pkl', 'rb') as file:
 #test models
 data_string = "b,b,b,b,b,b,b,b,b,b,b,b,x,o,b,b,b,b,x,o,x,o,x,o,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b"
 test_array = np.array(data_string.strip().split(','))
-svm.predict(test_array)
+print("SVM:", svm.predict(test_array))
+print("NN2:", nn2.predict(test_array))
+print("NN1:", nn1.predict(test_array))
+print("KNN:", knn.predict(test_array))
 #data structure for storing game board
 
 #play each model against each other (do one where each goes first?)
@@ -29,6 +32,7 @@ svm.predict(test_array)
             #brake loop iteration
 
         #change whose turn it is
+
 
 
 
