@@ -12,12 +12,74 @@ with open('knn.pkl', 'rb') as file:
 with open('svm.pkl', 'rb') as file:
     svm = pickle.load(file)
 #test models
+# 1. Input Data String
 data_string = "b,b,b,b,b,b,b,b,b,b,b,b,x,o,b,b,b,b,x,o,x,o,x,o,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b"
-test_array = np.array(data_string.strip().split(','))
-print("SVM:", svm.predict(test_array))
-print("NN2:", nn2.predict(test_array))
-print("NN1:", nn1.predict(test_array))
-print("KNN:", knn.predict(test_array))
+
+# 2. Convert the string data into a 1D NumPy array
+# .strip() removes any leading/trailing whitespace, and .split(',') separates the elements
+data_array = np.array(data_string.strip().split(','))
+
+# Verify the initial array
+print("--- 1. Original 1D NumPy Array ({} elements) ---".format(data_array.size))
+print(data_array)
+print("-" * 50)
+
+
+# 3. Identify unique categories and create a mapping for the one-hot encoding
+# The unique function also returns the indices of the original array that map to the unique elements
+unique_categories, indices = np.unique(data_array, return_inverse=True)
+
+# N = Number of samples (42)
+N = data_array.size
+# C = Number of categories (3: 'b', 'o', 'x')
+C = unique_categories.size
+
+print("Unique Categories (Index Order): {}".format(unique_categories))
+# The mapping: b -> 0, o -> 1, x -> 2 (since np.unique sorts the categories alphabetically)
+print("-" * 50)
+
+
+# 4. Create the One-Hot Encoded Array
+# Initialize a new array of zeros with shape (N, C) -> (42, 3)
+one_hot_encoded = np.zeros((N, C), dtype=int)
+
+# Use the 'indices' (from return_inverse=True) to map elements to the correct column.
+one_hot_encoded[np.arange(N), indices] = 1
+
+# 5. Display the intermediate result
+print("--- 2. Intermediate One-Hot Encoded (42 samples, 3 features per sample) ---")
+print(f"Shape: {one_hot_encoded.shape}")
+print(one_hot_encoded[:5])
+print("... (showing first 5 rows)")
+print("-" * 50)
+
+# 6. CRUCIAL TRANSFORMATION: Flatten and Reshape for the SVC Model
+# The SVC model expects ONE sample with 126 features (42 * 3).
+# Flatten the (42, 3) matrix into a 1D vector of length 126
+X_flat = one_hot_encoded.flatten()
+
+# Reshape the 1D vector into a 2D array with 1 row and 126 columns
+# This is the standard (n_samples, n_features) format for a single prediction.
+X_for_svc = X_flat.reshape(1, -1)
+
+# 7. Display the final result for the classifier
+print("--- 3. Final Feature Vector for SVC Prediction ---")
+print(f"Required Shape: {X_for_svc.shape}")
+# The new shape (1, 126) matches the 126 features the SVC expects.
+print(X_for_svc)
+print("-" * 50)
+
+# Reference for the original category mapping
+print("Category Mapping:")
+print(f"Index 0: {unique_categories[0]}")
+print(f"Index 1: {unique_categories[1]}")
+print(f"Index 2: {unique_categories[2]}")
+print("-" * 50)
+
+print("SVM:", svm.predict(X_for_svc))
+print("NN2:", nn2.predict(X_for_svc))
+print("NN1:", nn1.predict(X_for_svc))
+print("KNN:", knn.predict(X_for_svc))
 #data structure for storing game board
 
 #play each model against each other (do one where each goes first?)
@@ -32,7 +94,3 @@ print("KNN:", knn.predict(test_array))
             #brake loop iteration
 
         #change whose turn it is
-
-
-
-
