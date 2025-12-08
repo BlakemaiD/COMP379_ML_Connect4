@@ -21,7 +21,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 #%%
 #Upload the data, once unziped
 #/Users/Downloads/connect+4/connect-4.data
-data = pd.read_csv("/Users/blakemaidoan/Downloads/connect+4/connect-4.data", header=None)
+data = pd.read_csv("/Users/Downloads/connect+4/connect-4.data", header=None)
 
 # Lfeatures = first 42 columns
 X = data.iloc[:, :-1]
@@ -129,6 +129,15 @@ def run_svm_for_split(X, y, train_ratio, val_ratio, test_ratio):
         "f1": test_f1
     }
 
+# 60 / 20 / 20
+result_60_20_20 = run_svm_for_split(X, y, 0.60, 0.20, 0.20)
+
+# 50 / 25 / 25
+result_50_25_25 = run_svm_for_split(X, y, 0.50, 0.25, 0.25)
+
+# 20 / 20 / 60
+result_20_20_60 = run_svm_for_split(X, y, 0.20, 0.20, 0.60)
+
 #%% md
 # 
 # === Running SVM for split 60/20/20 ===
@@ -186,11 +195,4 @@ def run_svm_for_split(X, y, train_ratio, val_ratio, test_ratio):
 # F1 Score : 0.7693
 # 
 #%%
-# 60 / 20 / 20
-result_60_20_20 = run_svm_for_split(X, y, 0.60, 0.20, 0.20)
 
-# 50 / 25 / 25
-result_50_25_25 = run_svm_for_split(X, y, 0.50, 0.25, 0.25)
-
-# 20 / 20 / 60
-result_20_20_60 = run_svm_for_split(X, y, 0.20, 0.20, 0.60)
