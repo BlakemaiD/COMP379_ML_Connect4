@@ -13,103 +13,8 @@ with open('svm.pkl', 'rb') as file:
     svm = pickle.load(file)
 with open('logreg.pkl', 'rb') as file:
     logreg = pickle.load(file)
-#test models
-# 1. Input Data String
-data_string = "b,b,b,b,b,b,b,b,b,b,b,b,x,o,b,b,b,b,x,o,x,o,x,o,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b"
 
-# 2. Convert the string data into a 1D NumPy array
-# .strip() removes any leading/trailing whitespace, and .split(',') separates the elements
-data_array = np.array(data_string.strip().split(','))
-
-# Verify the initial array
-print("--- 1. Original 1D NumPy Array ({} elements) ---".format(data_array.size))
-print(data_array)
-print("-" * 50)
-
-
-# 3. Identify unique categories and create a mapping for the one-hot encoding
-# The unique function also returns the indices of the original array that map to the unique elements
-unique_categories, indices = np.unique(data_array, return_inverse=True)
-
-# N = Number of samples (42)
-N = data_array.size
-# C = Number of categories (3: 'b', 'o', 'x')
-C = unique_categories.size
-
-print("Unique Categories (Index Order): {}".format(unique_categories))
-# The mapping: b -> 0, o -> 1, x -> 2 (since np.unique sorts the categories alphabetically)
-print("-" * 50)
-
-
-# 4. Create the One-Hot Encoded Array
-# Initialize a new array of zeros with shape (N, C) -> (42, 3)
-one_hot_encoded = np.zeros((N, C), dtype=int)
-
-# Use the 'indices' (from return_inverse=True) to map elements to the correct column.
-one_hot_encoded[np.arange(N), indices] = 1
-
-# 5. Display the intermediate result
-print("--- 2. Intermediate One-Hot Encoded (42 samples, 3 features per sample) ---")
-print(f"Shape: {one_hot_encoded.shape}")
-print(one_hot_encoded[:5])
-print("... (showing first 5 rows)")
-print("-" * 50)
-
-# 6. CRUCIAL TRANSFORMATION: Flatten and Reshape for the SVC Model
-# The SVC model expects ONE sample with 126 features (42 * 3).
-# Flatten the (42, 3) matrix into a 1D vector of length 126
-X_flat = one_hot_encoded.flatten()
-
-# Reshape the 1D vector into a 2D array with 1 row and 126 columns
-# This is the standard (n_samples, n_features) format for a single prediction.
-X_for_svc = X_flat.reshape(1, -1)
-
-# 7. Display the final result for the classifier
-print("--- 3. Final Feature Vector for SVC Prediction ---")
-print(f"Required Shape: {X_for_svc.shape}")
-# The new shape (1, 126) matches the 126 features the SVC expects.
-print(X_for_svc)
-print("-" * 50)
-
-# Reference for the original category mapping
-print("Category Mapping:")
-print(f"Index 0: {unique_categories[0]}")
-print(f"Index 1: {unique_categories[1]}")
-print(f"Index 2: {unique_categories[2]}")
-print("-" * 50)
-
-#creating a fucntion that combines most of the code above***
-def setting_board_string(data_string):
-    #1
-    data_array = np.array(data_string.strip().split(','))
-    #2
-    #unique_categories, indices = np.unique(data_array, return_inverse=True)
-    #3.
-    N = data_array.size  # should be 42
-    C = 3 # 3
-    one_hot_encoded = np.zeros((N, C), dtype=int)
-    for i, cell in enumerate(data_array):
-        if cell == 'b':
-            one_hot_encoded[i, 0] = 1  # [1,0,0]
-        elif cell == 'o':
-            one_hot_encoded[i, 1] = 1  # [0,1,0]
-        elif cell == 'x':
-            one_hot_encoded[i, 2] = 1  # [0,0,1]
-
-    #4 flatten to (1,126)
-    X_flat = one_hot_encoded.flatten()
-    X_for_svc = X_flat.reshape(1, -1)
-
-    return X_for_svc
-
-
-print("SVM:", svm.decision_function(X_for_svc))
-print("NN2:", nn2.predict(X_for_svc))
-print("NN1:", nn1.predict_proba(X_for_svc))
-print("KNN:", knn.predict_proba(X_for_svc))
-print("Logreg:", logreg.predict_proba(X_for_svc))
 #data structure for storing game board
-
 
 #play each model against each other (do one where each goes first?)
     #before starting, clear game board and select two models
@@ -145,29 +50,6 @@ def print_board(board):
     for r in range(ROWS-1, -1, -1):  # print from top down
         print(' '.join(board[r]))
 
-def flip_board(board):
-    new_board = []
-    for r in range(ROWS):
-        row = []
-        for c in range(COLUMNS):
-            if board[r][c] == 'x':
-                row.append('o')
-            elif board[r][c] == 'o':
-                row.append('x')
-            else:
-                row.append('b')
-        new_board.append(row)
-    return new_board
-
-'''
-board_real = create_empty_board()
-board_view_p1 = create_empty_board()
-board_view_p2 = create_empty_board()
-
-board_view_p2 = flip_board(board_view_p1)
-'''
-
-
 #will convert the current board to the string for setting_board_string/Sam's code
 def board_to_string(board):
     cells = []
@@ -185,23 +67,65 @@ def get_moves(board):
         for r in range(ROWS):
             if board[r][c] == 'b':
                 column_space = True
-                break
-            if column_has_space:
-                valid_moves.append((c))
+                valid_moves.append((r, c))
+                break   
     return valid_moves
 
-board = create_empty_board()
-print_board(board)
-print("Valid moves on empty board:", get_moves(board))
+import copy
+def generate_boards(board, turn):
+    moves = get_moves(board)
+    print("Possible moves:", moves)
+    possible_boards = []
+    for move in moves:
+        test_board = copy.deepcopy(board)
+        test_board[move[0]][move[1]] = 'x' if turn % 2 == 1 else 'o'
+        possible_boards.append(test_board)
+    return possible_boards
+    
+def setting_board_string(data_string):
+    #1
+    data_array = np.array(data_string.strip().split(','))
+    #2
+    #unique_categories, indices = np.unique(data_array, return_inverse=True)
+    #3.
+    N = data_array.size  # should be 42
+    C = 3 # 3
+    one_hot_encoded = np.zeros((N, C), dtype=int)
+    for i, cell in enumerate(data_array):
+        if cell == 'b':
+            one_hot_encoded[i, 0] = 1  # [1,0,0]
+        elif cell == 'o':
+            one_hot_encoded[i, 1] = 1  # [0,1,0]
+        elif cell == 'x':
+            one_hot_encoded[i, 2] = 1  # [0,0,1]
 
+    #4 flatten to (1,126)
+    X_flat = one_hot_encoded.flatten()
+    X_for_svc = X_flat.reshape(1, -1)
 
-def check_win(board, cell):
+    return X_for_svc
+    
+def predict(model, X):
+    if model == nn1:
+        return model.predict_proba(setting_board_string(X))
+    if model == nn2:
+        return model.predict(setting_board_string(X))
+    if model == knn:
+        return model.predict_proba(setting_board_string(X))
+    if model == svm:
+        return model.decision_function(setting_board_string(X))
+    if model == logreg:
+        return model.decision_function(setting_board_string(X))
+
+def check_win(board, model):
 
     #check whose turn it is as a parameter, also include a fucntion that will tell when the board is full
 
-    #if model == 1:  cell = 'x'
-    ##else: cell = 'o'
-
+    if model == 1:
+        cell = 'x'
+    else:
+        cell = 'o'
+        
     #horizontal test
     for r in range(ROWS):
         for c in range(COLUMNS - 3):
@@ -240,13 +164,112 @@ def check_win(board, cell):
 
     return False
 
-def check_draw(board):
+def flip_board_string(data_string):
+    """
+    Swaps 'x' and 'o' in the board string to create a Player 1 (x) perspective.
+    This is used when Model 2 (o) is playing.
+    """
+    # Use string replace to swap symbols
+    
+    # 1. Replace 'o' with a temporary placeholder (e.g., 'z')
+    temp_string = data_string.replace('o', 'z') 
+    
+    # 2. Replace 'x' with 'o'
+    temp_string = temp_string.replace('x', 'o')
+    
+    # 3. Replace the placeholder 'z' with 'x'
+    flipped_string = temp_string.replace('z', 'x')
+    
+    return flipped_string
 
-    for r in range(ROWS):
-        for c in range(COLUMNS):
-            if (board[r][c] == 'b'):
-                return False
-    return True
+def update_wins(model):
+    if model == nn1:
+        global nn1_wins
+        nn1_wins += 1
+    if model == nn2:
+        global nn2_wins
+        nn2_wins += 1
+    if model == knn:
+        global knn_wins
+        knn_wins += 1
+    if model == svm:
+        global svm_wins
+        svm_wins += 1
+    if model == logreg:
+        global logreg_wins
+        logreg_wins += 1
+        
+      
+nn1_wins = 0
+nn2_wins = 0
+knn_wins = 0
+svm_wins = 0
+logreg_wins = 0
+
+models = [logreg, nn1, nn2, knn, svm]
+
+for model1 in models:
+    for model2 in models:
+        turn = 1
+        won = -1
+        #don't play a model against itself
+        if model1 == model2:
+            continue
+        #clear board before game starts
+        board = create_empty_board()
+        print("#", model1, "vs", model2, "#")
+        print_board(board)
+        while won == -1:
+            print("----Turn----", turn)
+            possible_boards = generate_boards(board, turn)
+            print("There are ", len(possible_boards), "possible boards.")
+            max_win_prob = float('-inf')
+            best_possibility = 0
+            count = 0     
+            #if its model 1's turn
+            if turn % 2 == 1:
+                #predict for possible boards
+                for possibility in possible_boards:
+                    pred = predict(model1, board_to_string(possibility))
+                    print("Predictions:", pred)
+                    #choose best move
+                    if pred[0][2] > max_win_prob:
+                        max_win_prob = pred[0][2]
+                        best_possibility = count
+                    count += 1          
+            #if its model 2's turn
+            elif turn % 2 == 0:
+                #predict for possible boards
+                for possibility in possible_boards:
+                    board_str_unflipped = board_to_string(possibility)
+                    board_str_flipped = flip_board_string(board_str_unflipped)
+                    pred = predict(model2, board_str_flipped)
+                    print("Predictions:", pred)
+                    #choose best move
+                    if pred[0][1] > max_win_prob:
+                        max_win_prob = pred[0][2]
+                        best_possibility = count
+                    count += 1
+            #update board
+            board = copy.deepcopy(possible_boards[best_possibility])
+            #print board?
+            print_board(board)
+            #check win
+            if check_win(board, turn % 2):
+                won = turn % 2
+            if won == 1:
+                update_wins(model1)
+            if won == 0:
+                update_wins(model2)
+            #change turns
+            turn += 1
+        print("NN1 wins:", nn1_wins)
+        print("NN2 wins:", nn2_wins)
+        print("KNN wins:", knn_wins)
+        print("SVM wins:", svm_wins)
+        print("Logreg wins:", logreg_wins)
+
+
 
 
 
