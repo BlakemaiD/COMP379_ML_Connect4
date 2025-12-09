@@ -145,6 +145,21 @@ def print_board(board):
     for r in range(ROWS-1, -1, -1):  # print from top down
         print(' '.join(board[r]))
 
+def flip_board(board):
+    new_board = []
+    for r in range(ROWS):
+        row = []
+        for c in range(COLUMNS):
+            if board[r][c] == 'x':
+                row.append('o')
+            elif board[r][c] == 'o':
+                row.append('x')
+            else:
+                row.append('b')
+        new_board.append(row)
+    return new_board
+
+
 #will convert the current board to the string for setting_board_string/Sam's code
 def board_to_string(board):
     cells = []
@@ -224,6 +239,7 @@ def check_draw(board):
             if (board[r][c] == 'b'):
                 return False
     return True
+
 
 
 
