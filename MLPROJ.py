@@ -11,6 +11,8 @@ with open('knn.pkl', 'rb') as file:
     knn = pickle.load(file)
 with open('svm.pkl', 'rb') as file:
     svm = pickle.load(file)
+with open('logreg.pkl', 'rb') as file:
+    logreg = pickle.load(file)
 #test models
 # 1. Input Data String
 data_string = "b,b,b,b,b,b,b,b,b,b,b,b,x,o,b,b,b,b,x,o,x,o,x,o,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b"
@@ -76,10 +78,11 @@ print(f"Index 1: {unique_categories[1]}")
 print(f"Index 2: {unique_categories[2]}")
 print("-" * 50)
 
-print("SVM:", svm.predict(X_for_svc))
+print("SVM:", svm.decision_function(X_for_svc))
 print("NN2:", nn2.predict(X_for_svc))
 print("NN1:", nn1.predict(X_for_svc))
 print("KNN:", knn.predict(X_for_svc))
+print("Logreg:", logreg.predict_proba(X_for_svc))
 #data structure for storing game board
 
 #play each model against each other (do one where each goes first?)
@@ -124,6 +127,7 @@ def board_to_string(board):
             cells.append(board[r][c])
     data_string = ','.join(cells)
     return data_string
+
 
 
 
