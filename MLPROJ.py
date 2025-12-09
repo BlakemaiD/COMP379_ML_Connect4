@@ -94,3 +94,40 @@ print("KNN:", knn.predict(X_for_svc))
             #brake loop iteration
 
         #change whose turn it is
+
+
+#8 creating the board
+ROWS = 6
+COLUMNS = 7
+
+def create_empty_board():
+#Board is 6x7, board[row][columns] filled with b to represent a blank board
+
+    board = []
+    for i in range(ROWS):
+        row = []
+        for c in range(COLUMNS):
+            row.append('b')
+        board.append(row)
+    return board
+
+def print_board(board):
+    print("--------Current Board--------")
+    for r in range(ROWS-1, -1, -1):  # print from top down
+        print(' '.join(board[r]))
+
+#will convert the current board to the string for setting_board_string/Sam's code
+def board_to_string(board):
+    cells = []
+    for r in range(ROWS):
+        for c in range(COLUMNS):
+            cells.append(board[r][c])
+    data_string = ','.join(cells)
+    return data_string
+
+
+
+
+
+
+
