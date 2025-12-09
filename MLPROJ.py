@@ -159,6 +159,14 @@ def flip_board(board):
         new_board.append(row)
     return new_board
 
+'''
+board_real = create_empty_board()
+board_view_p1 = create_empty_board()
+board_view_p2 = create_empty_board()
+
+board_view_p2 = flip_board(board_view_p1)
+'''
+
 
 #will convert the current board to the string for setting_board_string/Sam's code
 def board_to_string(board):
@@ -239,6 +247,7 @@ def check_draw(board):
             if (board[r][c] == 'b'):
                 return False
     return True
+
 
 
 
