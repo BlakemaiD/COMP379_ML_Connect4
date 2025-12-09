@@ -128,6 +128,23 @@ def board_to_string(board):
     data_string = ','.join(cells)
     return data_string
 
+#when moving you need to check to see if the move is valid in connect 4
+def get_moves(board):
+    valid_moves = []
+    for c in range(COLUMNS):
+        column_has_space = False
+        for r in range(ROWS):
+            if board[r][c] == 'b':
+                column_space = True
+                break
+            if column_has_space:
+                valid_moves.append((c))
+    return valid_moves
+
+board = create_empty_board()
+print_board(board)
+print("Valid moves on empty board:", get_moves(board))
+
 
 
 
