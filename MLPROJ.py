@@ -172,15 +172,13 @@ print_board(board)
 print("Valid moves on empty board:", get_moves(board))
 
 
-def check_win(board, model):
+def check_win(board, cell):
 
     #check whose turn it is as a parameter, also include a fucntion that will tell when the board is full
 
-    if model == 1:
-        cell = 'x'
-    else:
-        cell = 'o'
-        
+    #if model == 1:  cell = 'x'
+    ##else: cell = 'o'
+
     #horizontal test
     for r in range(ROWS):
         for c in range(COLUMNS - 3):
@@ -188,7 +186,7 @@ def check_win(board, model):
                 and board[r][c+1] == cell
                 and board[r][c+2] == cell
                 and board[r][c+3] == cell):
-                return model
+                return True
 
     #verical test
     for r in range(ROWS - 3):
@@ -197,7 +195,7 @@ def check_win(board, model):
                 and board[r+1][c] == cell
                 and board[r+2][c] == cell
                 and board[r+3][c] == cell):
-                return model
+                return True
 
     #positive diagnal
     for c in range(COLUMNS - 3):
@@ -206,7 +204,7 @@ def check_win(board, model):
                 and board[r+1][c+1] == cell
                 and board[r+2][c+2] == cell
                 and board[r+3][c+3] == cell):
-                return model
+                return True
 
     #negative diagnol
     for r in range(3, ROWS):
@@ -215,9 +213,18 @@ def check_win(board, model):
                 and board[r-1][c+1] == cell
                 and board[r-2][c+2] == cell
                 and board[r-3][c+3] == cell):
-                return model
+                return True
 
     return False
+
+def check_draw(board):
+
+    for r in range(ROWS):
+        for c in range(COLUMNS):
+            if (board[r][c] == 'b'):
+                return False
+    return True
+
 
 
 
