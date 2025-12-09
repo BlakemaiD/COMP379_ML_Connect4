@@ -80,8 +80,8 @@ print("-" * 50)
 
 print("SVM:", svm.decision_function(X_for_svc))
 print("NN2:", nn2.predict(X_for_svc))
-print("NN1:", nn1.predict(X_for_svc))
-print("KNN:", knn.predict(X_for_svc))
+print("NN1:", nn1.predict_proba(X_for_svc))
+print("KNN:", knn.predict_proba(X_for_svc))
 print("Logreg:", logreg.predict_proba(X_for_svc))
 #data structure for storing game board
 
@@ -127,6 +127,7 @@ def board_to_string(board):
             cells.append(board[r][c])
     data_string = ','.join(cells)
     return data_string
+
 
 
 
