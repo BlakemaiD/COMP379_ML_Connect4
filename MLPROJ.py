@@ -78,12 +78,38 @@ print(f"Index 1: {unique_categories[1]}")
 print(f"Index 2: {unique_categories[2]}")
 print("-" * 50)
 
+#creating a fucntion that combines most of the code above***
+def setting_board_string(data_string):
+    #1
+    data_array = np.array(data_string.strip().split(','))
+    #2
+    #unique_categories, indices = np.unique(data_array, return_inverse=True)
+    #3.
+    N = data_array.size  # should be 42
+    C = 3 # 3
+    one_hot_encoded = np.zeros((N, C), dtype=int)
+    for i, cell in enumerate(data_array):
+        if cell == 'b':
+            one_hot_encoded[i, 0] = 1  # [1,0,0]
+        elif cell == 'o':
+            one_hot_encoded[i, 1] = 1  # [0,1,0]
+        elif cell == 'x':
+            one_hot_encoded[i, 2] = 1  # [0,0,1]
+
+    #4 flatten to (1,126)
+    X_flat = one_hot_encoded.flatten()
+    X_for_svc = X_flat.reshape(1, -1)
+
+    return X_for_svc
+
+
 print("SVM:", svm.decision_function(X_for_svc))
 print("NN2:", nn2.predict(X_for_svc))
 print("NN1:", nn1.predict_proba(X_for_svc))
 print("KNN:", knn.predict_proba(X_for_svc))
 print("Logreg:", logreg.predict_proba(X_for_svc))
 #data structure for storing game board
+
 
 #play each model against each other (do one where each goes first?)
     #before starting, clear game board and select two models
@@ -144,6 +170,7 @@ def get_moves(board):
 board = create_empty_board()
 print_board(board)
 print("Valid moves on empty board:", get_moves(board))
+
 
 
 
